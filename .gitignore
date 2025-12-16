@@ -27,6 +27,3 @@ Thumbs.db
 # Build
 /bin/
 /dist/
-
-# Generated proto code
-/gen/
