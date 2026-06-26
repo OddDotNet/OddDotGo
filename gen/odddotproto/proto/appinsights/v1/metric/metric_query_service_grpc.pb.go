@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.2
 // - protoc             (unknown)
-// source: odddotproto/proto/metrics/v1/metric_query_service.proto
+// source: odddotproto/proto/appinsights/v1/metric/metric_query_service.proto
 
-package metricsv1
+package metric
 
 import (
 	context "context"
@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	MetricQueryService_Query_FullMethodName       = "/odddotnet.proto.metrics.v1.MetricQueryService/Query"
-	MetricQueryService_StreamQuery_FullMethodName = "/odddotnet.proto.metrics.v1.MetricQueryService/StreamQuery"
+	MetricQueryService_Query_FullMethodName       = "/odddotnet.proto.appinsights.v1.metric.MetricQueryService/Query"
+	MetricQueryService_StreamQuery_FullMethodName = "/odddotnet.proto.appinsights.v1.metric.MetricQueryService/StreamQuery"
+	MetricQueryService_Reset_FullMethodName       = "/odddotnet.proto.appinsights.v1.metric.MetricQueryService/Reset"
 )
 
 // MetricQueryServiceClient is the client API for MetricQueryService service.
@@ -29,6 +30,7 @@ const (
 type MetricQueryServiceClient interface {
 	Query(ctx context.Context, in *MetricQueryRequest, opts ...grpc.CallOption) (*MetricQueryResponse, error)
 	StreamQuery(ctx context.Context, in *MetricQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatMetric], error)
+	Reset(ctx context.Context, in *MetricResetRequest, opts ...grpc.CallOption) (*MetricResetResponse, error)
 }
 
 type metricQueryServiceClient struct {
@@ -68,12 +70,23 @@ func (c *metricQueryServiceClient) StreamQuery(ctx context.Context, in *MetricQu
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MetricQueryService_StreamQueryClient = grpc.ServerStreamingClient[FlatMetric]
 
+func (c *metricQueryServiceClient) Reset(ctx context.Context, in *MetricResetRequest, opts ...grpc.CallOption) (*MetricResetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MetricResetResponse)
+	err := c.cc.Invoke(ctx, MetricQueryService_Reset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MetricQueryServiceServer is the server API for MetricQueryService service.
 // All implementations must embed UnimplementedMetricQueryServiceServer
 // for forward compatibility.
 type MetricQueryServiceServer interface {
 	Query(context.Context, *MetricQueryRequest) (*MetricQueryResponse, error)
 	StreamQuery(*MetricQueryRequest, grpc.ServerStreamingServer[FlatMetric]) error
+	Reset(context.Context, *MetricResetRequest) (*MetricResetResponse, error)
 	mustEmbedUnimplementedMetricQueryServiceServer()
 }
 
@@ -89,6 +102,9 @@ func (UnimplementedMetricQueryServiceServer) Query(context.Context, *MetricQuery
 }
 func (UnimplementedMetricQueryServiceServer) StreamQuery(*MetricQueryRequest, grpc.ServerStreamingServer[FlatMetric]) error {
 	return status.Error(codes.Unimplemented, "method StreamQuery not implemented")
+}
+func (UnimplementedMetricQueryServiceServer) Reset(context.Context, *MetricResetRequest) (*MetricResetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Reset not implemented")
 }
 func (UnimplementedMetricQueryServiceServer) mustEmbedUnimplementedMetricQueryServiceServer() {}
 func (UnimplementedMetricQueryServiceServer) testEmbeddedByValue()                            {}
@@ -140,16 +156,38 @@ func _MetricQueryService_StreamQuery_Handler(srv interface{}, stream grpc.Server
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MetricQueryService_StreamQueryServer = grpc.ServerStreamingServer[FlatMetric]
 
+func _MetricQueryService_Reset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MetricResetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MetricQueryServiceServer).Reset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MetricQueryService_Reset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MetricQueryServiceServer).Reset(ctx, req.(*MetricResetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MetricQueryService_ServiceDesc is the grpc.ServiceDesc for MetricQueryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var MetricQueryService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "odddotnet.proto.metrics.v1.MetricQueryService",
+	ServiceName: "odddotnet.proto.appinsights.v1.metric.MetricQueryService",
 	HandlerType: (*MetricQueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Query",
 			Handler:    _MetricQueryService_Query_Handler,
+		},
+		{
+			MethodName: "Reset",
+			Handler:    _MetricQueryService_Reset_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -159,5 +197,5 @@ var MetricQueryService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "odddotproto/proto/metrics/v1/metric_query_service.proto",
+	Metadata: "odddotproto/proto/appinsights/v1/metric/metric_query_service.proto",
 }
