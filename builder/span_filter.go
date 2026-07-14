@@ -4,7 +4,7 @@ import (
 	commonv1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/common/v1"
 	resourcev1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/resource/v1"
 	tracev1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/trace/v1"
-	otlptracev1 "github.com/OddDotNet/OddDotGo/gen/opentelemetry/proto/trace/v1"
+	otlptracev1 "go.opentelemetry.io/proto/otlp/trace/v1"
 )
 
 // WhereSpanFilterConfigurator provides methods to add filters for span queries.
