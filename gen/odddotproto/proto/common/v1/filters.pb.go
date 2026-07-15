@@ -21,6 +21,13 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// InstrumentationScopeFilter matches a signal's instrumentation scope on one of
+// its fields.
+//
+// Set exactly one field: the filter constrains only that dimension of the
+// scope. Leaving the oneof unset matches nothing. To constrain several
+// dimensions at once, add several InstrumentationScopeFilters to the query —
+// filters combine with AND (see the query-request protos).
 type InstrumentationScopeFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -112,18 +119,22 @@ type isInstrumentationScopeFilter_Value interface {
 }
 
 type InstrumentationScopeFilter_Name struct {
+	// Match the scope name (e.g. the library name).
 	Name *StringProperty `protobuf:"bytes,1,opt,name=name,proto3,oneof"`
 }
 
 type InstrumentationScopeFilter_Attributes struct {
+	// Match the scope's attributes.
 	Attributes *KeyValueListProperty `protobuf:"bytes,2,opt,name=attributes,proto3,oneof"`
 }
 
 type InstrumentationScopeFilter_Version struct {
+	// Match the scope version.
 	Version *StringProperty `protobuf:"bytes,3,opt,name=version,proto3,oneof"`
 }
 
 type InstrumentationScopeFilter_DroppedAttributesCount struct {
+	// Match the count of attributes dropped from the scope.
 	DroppedAttributesCount *UInt32Property `protobuf:"bytes,4,opt,name=dropped_attributes_count,json=droppedAttributesCount,proto3,oneof"`
 }
 

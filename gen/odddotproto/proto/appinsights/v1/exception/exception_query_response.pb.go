@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ExceptionQueryResponse is the unary Query reply: every exception item that
+// matched. Empty when the wait ended with no match. StreamQuery streams the
+// FlatException items individually instead.
 type ExceptionQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Exceptions    []*FlatException       `protobuf:"bytes,1,rep,name=exceptions,proto3" json:"exceptions,omitempty"`

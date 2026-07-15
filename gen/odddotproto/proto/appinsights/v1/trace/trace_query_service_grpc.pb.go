@@ -27,9 +27,15 @@ const (
 // TraceQueryServiceClient is the client API for TraceQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// TraceQueryService queries the App Insights trace telemetry the sink has
+// received.
 type TraceQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *TraceQueryRequest, opts ...grpc.CallOption) (*TraceQueryResponse, error)
+	// StreamQuery streams each FlatTrace as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *TraceQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatTrace], error)
+	// Reset clears the sink's buffered trace telemetry.
 	Reset(ctx context.Context, in *TraceResetRequest, opts ...grpc.CallOption) (*TraceResetResponse, error)
 }
 
@@ -83,9 +89,15 @@ func (c *traceQueryServiceClient) Reset(ctx context.Context, in *TraceResetReque
 // TraceQueryServiceServer is the server API for TraceQueryService service.
 // All implementations must embed UnimplementedTraceQueryServiceServer
 // for forward compatibility.
+//
+// TraceQueryService queries the App Insights trace telemetry the sink has
+// received.
 type TraceQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *TraceQueryRequest) (*TraceQueryResponse, error)
+	// StreamQuery streams each FlatTrace as it matches, over the same window.
 	StreamQuery(*TraceQueryRequest, grpc.ServerStreamingServer[FlatTrace]) error
+	// Reset clears the sink's buffered trace telemetry.
 	Reset(context.Context, *TraceResetRequest) (*TraceResetResponse, error)
 	mustEmbedUnimplementedTraceQueryServiceServer()
 }

@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatPageView is one page-view telemetry item paired with the envelope it
+// arrived under — the unit every page-view query returns.
 type FlatPageView struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageView      *v1.PageViewTelemetry  `protobuf:"bytes,1,opt,name=page_view,json=pageView,proto3" json:"page_view,omitempty"`
-	Envelope      *v1.TelemetryEnvelope  `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched page-view telemetry.
+	PageView *v1.PageViewTelemetry `protobuf:"bytes,1,opt,name=page_view,json=pageView,proto3" json:"page_view,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

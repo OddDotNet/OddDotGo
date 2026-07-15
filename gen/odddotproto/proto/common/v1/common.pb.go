@@ -21,6 +21,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Take controls how many matching signals a query collects before it stops
+// waiting and returns.
+//
+// Every query blocks until either its Take target is met or its Duration
+// elapses, whichever happens first. Signals already buffered by the sink are
+// evaluated immediately when the query starts, then the query waits for
+// newly-arriving signals until the target is met or the Duration runs out.
+//
+// When no Take is set the sink defaults to TakeFirst.
 type Take struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -102,14 +111,21 @@ type isTake_Value interface {
 }
 
 type Take_TakeFirst struct {
+	// Stop and return as soon as the first matching signal is found.
 	TakeFirst *TakeFirst `protobuf:"bytes,1,opt,name=take_first,json=takeFirst,proto3,oneof"`
 }
 
 type Take_TakeAll struct {
+	// Collect every matching signal seen over the whole Duration. TakeAll has
+	// no target count, so it never returns early: the query always blocks for
+	// the full Duration, even when matches are already buffered. To wait for a
+	// specific signal and return the instant it arrives, use TakeFirst (or
+	// TakeExact) with a filter instead.
 	TakeAll *TakeAll `protobuf:"bytes,2,opt,name=take_all,json=takeAll,proto3,oneof"`
 }
 
 type Take_TakeExact struct {
+	// Stop and return as soon as `count` matching signals are found.
 	TakeExact *TakeExact `protobuf:"bytes,3,opt,name=take_exact,json=takeExact,proto3,oneof"`
 }
 
@@ -119,6 +135,8 @@ func (*Take_TakeAll) isTake_Value() {}
 
 func (*Take_TakeExact) isTake_Value() {}
 
+// TakeFirst returns as soon as one matching signal is found, or when the
+// Duration elapses if none is found.
 type TakeFirst struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -155,6 +173,10 @@ func (*TakeFirst) Descriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_common_proto_rawDescGZIP(), []int{1}
 }
 
+// TakeAll waits the entire Duration and returns every matching signal observed
+// during it. It has no target count, so it never short-circuits — the query
+// always blocks for the full Duration, even if matching signals are already
+// present.
 type TakeAll struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -191,9 +213,12 @@ func (*TakeAll) Descriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_common_proto_rawDescGZIP(), []int{2}
 }
 
+// TakeExact returns as soon as `count` matching signals are found, or when the
+// Duration elapses with fewer than `count` found.
 type TakeExact struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Count         int32                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Number of matching signals to collect before returning early.
+	Count         int32 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -235,9 +260,16 @@ func (x *TakeExact) GetCount() int32 {
 	return 0
 }
 
+// Duration is the maximum time, in milliseconds, a query waits for its Take
+// target to be met.
+//
+// A value of zero or less — or an unset Duration — selects the sink default of
+// 30000 ms (30 seconds); it does NOT mean "return immediately." Because TakeAll
+// never returns early, a TakeAll query always blocks for this full Duration.
 type Duration struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Milliseconds  int32                  `protobuf:"varint,1,opt,name=milliseconds,proto3" json:"milliseconds,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Maximum wait in milliseconds. Zero or negative selects the 30000 ms default.
+	Milliseconds  int32 `protobuf:"varint,1,opt,name=milliseconds,proto3" json:"milliseconds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

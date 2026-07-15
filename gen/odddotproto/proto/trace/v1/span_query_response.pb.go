@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// SpanQueryResponse is the unary Query reply: every span that matched, each
+// flattened with its resource and scope. Empty when the wait ended with no
+// match. StreamQuery streams the FlatSpans individually instead.
 type SpanQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Spans         []*FlatSpan            `protobuf:"bytes,1,rep,name=spans,proto3" json:"spans,omitempty"`

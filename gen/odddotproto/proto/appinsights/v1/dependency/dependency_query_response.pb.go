@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// DependencyQueryResponse is the unary Query reply: every dependency item that
+// matched. Empty when the wait ended with no match. StreamQuery streams the
+// FlatDependency items individually instead.
 type DependencyQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Dependencies  []*FlatDependency      `protobuf:"bytes,1,rep,name=dependencies,proto3" json:"dependencies,omitempty"`

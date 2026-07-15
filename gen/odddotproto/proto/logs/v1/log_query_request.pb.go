@@ -24,11 +24,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// LogQueryRequest asks the sink for logs matching filters, bounded by take and
+// duration.
 type LogQueryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
-	Take          *v1.Take               `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
-	Duration      *v1.Duration           `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Filters a log must satisfy to match. A log must pass every filter
+	// (logical AND); an empty list matches all logs.
+	Filters []*Where `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
+	// How many matching logs end the wait early. Defaults to TakeFirst. See Take.
+	Take *v1.Take `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
+	// Maximum time to wait for matching logs. Defaults to 30s. See Duration.
+	Duration      *v1.Duration `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -84,6 +90,9 @@ func (x *LogQueryRequest) GetDuration() *v1.Duration {
 	return nil
 }
 
+// Where is one filter clause. Set exactly one field to choose what it matches;
+// an unset Where matches nothing. A query ANDs its Where clauses together (see
+// LogQueryRequest.filters).
 type Where struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -195,26 +204,32 @@ type isWhere_Value interface {
 }
 
 type Where_Property struct {
+	// Match a field of the log record itself.
 	Property *PropertyFilter `protobuf:"bytes,1,opt,name=property,proto3,oneof"`
 }
 
 type Where_Or struct {
+	// Match when ANY of the nested clauses matches (logical OR).
 	Or *OrFilter `protobuf:"bytes,2,opt,name=or,proto3,oneof"`
 }
 
 type Where_InstrumentationScope struct {
+	// Match the log's instrumentation scope.
 	InstrumentationScope *v1.InstrumentationScopeFilter `protobuf:"bytes,3,opt,name=instrumentation_scope,json=instrumentationScope,proto3,oneof"`
 }
 
 type Where_Resource struct {
+	// Match the log's resource.
 	Resource *v11.ResourceFilter `protobuf:"bytes,4,opt,name=resource,proto3,oneof"`
 }
 
 type Where_InstrumentationScopeSchemaUrl struct {
+	// Match the instrumentation scope's schema URL.
 	InstrumentationScopeSchemaUrl *v1.StringProperty `protobuf:"bytes,5,opt,name=instrumentation_scope_schema_url,json=instrumentationScopeSchemaUrl,proto3,oneof"`
 }
 
 type Where_ResourceSchemaUrl struct {
+	// Match the resource's schema URL.
 	ResourceSchemaUrl *v1.StringProperty `protobuf:"bytes,6,opt,name=resource_schema_url,json=resourceSchemaUrl,proto3,oneof"`
 }
 
@@ -230,6 +245,9 @@ func (*Where_InstrumentationScopeSchemaUrl) isWhere_Value() {}
 
 func (*Where_ResourceSchemaUrl) isWhere_Value() {}
 
+// PropertyFilter matches a single field of the log record. Set exactly one
+// field; an unset PropertyFilter matches nothing. Fields mirror the
+// OpenTelemetry LogRecord.
 type PropertyFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -397,6 +415,7 @@ type PropertyFilter_SeverityText struct {
 }
 
 type PropertyFilter_Body struct {
+	// Match the log body, which may be any OTLP value type. See AnyValueProperty.
 	Body *v1.AnyValueProperty `protobuf:"bytes,5,opt,name=body,proto3,oneof"`
 }
 
@@ -440,6 +459,8 @@ func (*PropertyFilter_TraceId) isPropertyFilter_Value() {}
 
 func (*PropertyFilter_SpanId) isPropertyFilter_Value() {}
 
+// OrFilter matches when ANY of its nested Where clauses matches (logical OR),
+// letting you express disjunctions inside the otherwise-AND filter list.
 type OrFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
@@ -484,6 +505,8 @@ func (x *OrFilter) GetFilters() []*Where {
 	return nil
 }
 
+// SeverityNumberProperty compares a log's severity against an OTLP
+// SeverityNumber via EQUALS / NOT_EQUALS. See EnumCompareAsType.
 type SeverityNumberProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     v1.EnumCompareAsType   `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.EnumCompareAsType" json:"compare_as,omitempty"`

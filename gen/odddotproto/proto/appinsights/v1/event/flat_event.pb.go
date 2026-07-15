@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatEvent is one custom-event telemetry item paired with the envelope it
+// arrived under — the unit every event query returns.
 type FlatEvent struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Event         *v1.EventTelemetry     `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
-	Envelope      *v1.TelemetryEnvelope  `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched event telemetry.
+	Event *v1.EventTelemetry `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

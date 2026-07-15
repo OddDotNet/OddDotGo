@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatTrace is one App Insights trace (log-message) telemetry item paired with
+// the envelope it arrived under — the unit every trace query returns.
 type FlatTrace struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Trace         *v1.TraceTelemetry     `protobuf:"bytes,1,opt,name=trace,proto3" json:"trace,omitempty"`
-	Envelope      *v1.TelemetryEnvelope  `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched trace telemetry.
+	Trace *v1.TraceTelemetry `protobuf:"bytes,1,opt,name=trace,proto3" json:"trace,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

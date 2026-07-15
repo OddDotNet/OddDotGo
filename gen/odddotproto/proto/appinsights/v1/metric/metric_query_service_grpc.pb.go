@@ -27,9 +27,15 @@ const (
 // MetricQueryServiceClient is the client API for MetricQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// MetricQueryService queries the App Insights metric telemetry the sink has
+// received.
 type MetricQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *MetricQueryRequest, opts ...grpc.CallOption) (*MetricQueryResponse, error)
+	// StreamQuery streams each FlatMetric as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *MetricQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatMetric], error)
+	// Reset clears the sink's buffered metric telemetry.
 	Reset(ctx context.Context, in *MetricResetRequest, opts ...grpc.CallOption) (*MetricResetResponse, error)
 }
 
@@ -83,9 +89,15 @@ func (c *metricQueryServiceClient) Reset(ctx context.Context, in *MetricResetReq
 // MetricQueryServiceServer is the server API for MetricQueryService service.
 // All implementations must embed UnimplementedMetricQueryServiceServer
 // for forward compatibility.
+//
+// MetricQueryService queries the App Insights metric telemetry the sink has
+// received.
 type MetricQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *MetricQueryRequest) (*MetricQueryResponse, error)
+	// StreamQuery streams each FlatMetric as it matches, over the same window.
 	StreamQuery(*MetricQueryRequest, grpc.ServerStreamingServer[FlatMetric]) error
+	// Reset clears the sink's buffered metric telemetry.
 	Reset(context.Context, *MetricResetRequest) (*MetricResetResponse, error)
 	mustEmbedUnimplementedMetricQueryServiceServer()
 }

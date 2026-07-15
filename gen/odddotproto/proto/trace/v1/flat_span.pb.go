@@ -24,13 +24,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatSpan is one span paired with the resource and instrumentation scope it
+// arrived under — the unit every span query returns.
+//
+// OTLP nests spans (ResourceSpans -> ScopeSpans -> Span) so context is not
+// repeated on the wire; the sink flattens that hierarchy back onto each span so
+// a single result carries everything needed to interpret it. The `span`,
+// `resource`, and `instrumentation_scope` fields are the upstream OpenTelemetry
+// messages — see the opentelemetry-proto docs for their contents; only the
+// flattening and the two schema-url fields are added here.
 type FlatSpan struct {
-	state                         protoimpl.MessageState    `protogen:"open.v1"`
-	Span                          *v1.Span                  `protobuf:"bytes,1,opt,name=span,proto3" json:"span,omitempty"`
-	Resource                      *v11.Resource             `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
-	InstrumentationScope          *v12.InstrumentationScope `protobuf:"bytes,3,opt,name=instrumentation_scope,json=instrumentationScope,proto3" json:"instrumentation_scope,omitempty"`
-	ResourceSchemaUrl             string                    `protobuf:"bytes,4,opt,name=resource_schema_url,json=resourceSchemaUrl,proto3" json:"resource_schema_url,omitempty"`
-	InstrumentationScopeSchemaUrl string                    `protobuf:"bytes,5,opt,name=instrumentation_scope_schema_url,json=instrumentationScopeSchemaUrl,proto3" json:"instrumentation_scope_schema_url,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched span (upstream OTLP Span).
+	Span *v1.Span `protobuf:"bytes,1,opt,name=span,proto3" json:"span,omitempty"`
+	// Resource the span was reported under (upstream OTLP Resource).
+	Resource *v11.Resource `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
+	// Instrumentation scope the span was reported under (upstream OTLP).
+	InstrumentationScope *v12.InstrumentationScope `protobuf:"bytes,3,opt,name=instrumentation_scope,json=instrumentationScope,proto3" json:"instrumentation_scope,omitempty"`
+	// Schema URL associated with the resource.
+	ResourceSchemaUrl string `protobuf:"bytes,4,opt,name=resource_schema_url,json=resourceSchemaUrl,proto3" json:"resource_schema_url,omitempty"`
+	// Schema URL associated with the instrumentation scope.
+	InstrumentationScopeSchemaUrl string `protobuf:"bytes,5,opt,name=instrumentation_scope_schema_url,json=instrumentationScopeSchemaUrl,proto3" json:"instrumentation_scope_schema_url,omitempty"`
 	unknownFields                 protoimpl.UnknownFields
 	sizeCache                     protoimpl.SizeCache
 }

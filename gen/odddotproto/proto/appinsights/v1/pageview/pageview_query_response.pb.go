@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// PageViewQueryResponse is the unary Query reply: every page-view item that
+// matched. Empty when the wait ended with no match. StreamQuery streams the
+// FlatPageView items individually instead.
 type PageViewQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PageViews     []*FlatPageView        `protobuf:"bytes,1,rep,name=page_views,json=pageViews,proto3" json:"page_views,omitempty"`

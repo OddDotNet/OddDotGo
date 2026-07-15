@@ -27,9 +27,14 @@ const (
 // PageViewQueryServiceClient is the client API for PageViewQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// PageViewQueryService queries the page-view telemetry the sink has received.
 type PageViewQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *PageViewQueryRequest, opts ...grpc.CallOption) (*PageViewQueryResponse, error)
+	// StreamQuery streams each FlatPageView as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *PageViewQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatPageView], error)
+	// Reset clears the sink's buffered page-view telemetry.
 	Reset(ctx context.Context, in *PageViewResetRequest, opts ...grpc.CallOption) (*PageViewResetResponse, error)
 }
 
@@ -83,9 +88,14 @@ func (c *pageViewQueryServiceClient) Reset(ctx context.Context, in *PageViewRese
 // PageViewQueryServiceServer is the server API for PageViewQueryService service.
 // All implementations must embed UnimplementedPageViewQueryServiceServer
 // for forward compatibility.
+//
+// PageViewQueryService queries the page-view telemetry the sink has received.
 type PageViewQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *PageViewQueryRequest) (*PageViewQueryResponse, error)
+	// StreamQuery streams each FlatPageView as it matches, over the same window.
 	StreamQuery(*PageViewQueryRequest, grpc.ServerStreamingServer[FlatPageView]) error
+	// Reset clears the sink's buffered page-view telemetry.
 	Reset(context.Context, *PageViewResetRequest) (*PageViewResetResponse, error)
 	mustEmbedUnimplementedPageViewQueryServiceServer()
 }

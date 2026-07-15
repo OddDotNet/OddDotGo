@@ -23,11 +23,18 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AvailabilityQueryRequest asks the sink for availability-test results matching
+// filters, bounded by take and duration. See common/v1/common.proto for the
+// shared Take/Duration wait contract.
 type AvailabilityQueryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
-	Take          *v1.Take               `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
-	Duration      *v1.Duration           `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Filters an item must satisfy to match. An item must pass every filter
+	// (logical AND); an empty list matches all availability items.
+	Filters []*Where `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
+	// How many matching items end the wait early. Defaults to TakeFirst. See Take.
+	Take *v1.Take `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
+	// Maximum time to wait for matches. Defaults to 30s. See Duration.
+	Duration      *v1.Duration `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -83,6 +90,9 @@ func (x *AvailabilityQueryRequest) GetDuration() *v1.Duration {
 	return nil
 }
 
+// Where is one filter clause. Set exactly one field; an unset Where matches
+// nothing. A query ANDs its Where clauses together (see
+// AvailabilityQueryRequest.filters).
 type Where struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -164,14 +174,17 @@ type isWhere_Value interface {
 }
 
 type Where_Property struct {
+	// Match a field of the availability telemetry itself.
 	Property *PropertyFilter `protobuf:"bytes,1,opt,name=property,proto3,oneof"`
 }
 
 type Where_Or struct {
+	// Match when ANY of the nested clauses matches (logical OR).
 	Or *OrFilter `protobuf:"bytes,2,opt,name=or,proto3,oneof"`
 }
 
 type Where_Envelope struct {
+	// Match the shared telemetry envelope (key / time / context). See EnvelopeFilter.
 	Envelope *v11.EnvelopeFilter `protobuf:"bytes,3,opt,name=envelope,proto3,oneof"`
 }
 
@@ -181,6 +194,8 @@ func (*Where_Or) isWhere_Value() {}
 
 func (*Where_Envelope) isWhere_Value() {}
 
+// PropertyFilter matches a single field of the AvailabilityTelemetry. Set
+// exactly one field; an unset PropertyFilter matches nothing.
 type PropertyFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -336,10 +351,12 @@ type PropertyFilter_Message struct {
 }
 
 type PropertyFilter_Properties struct {
+	// Match one entry of the custom string properties map. See PropertyMapProperty.
 	Properties *v11.PropertyMapProperty `protobuf:"bytes,7,opt,name=properties,proto3,oneof"`
 }
 
 type PropertyFilter_Measurements struct {
+	// Match one entry of the custom numeric measurements map. See MeasurementMapProperty.
 	Measurements *v11.MeasurementMapProperty `protobuf:"bytes,8,opt,name=measurements,proto3,oneof"`
 }
 
@@ -359,6 +376,8 @@ func (*PropertyFilter_Properties) isPropertyFilter_Value() {}
 
 func (*PropertyFilter_Measurements) isPropertyFilter_Value() {}
 
+// OrFilter matches when ANY of its nested Where clauses matches (logical OR),
+// letting you express disjunctions inside the otherwise-AND filter list.
 type OrFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`

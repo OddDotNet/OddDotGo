@@ -27,9 +27,15 @@ const (
 // AvailabilityQueryServiceClient is the client API for AvailabilityQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// AvailabilityQueryService queries the availability telemetry the sink has
+// received.
 type AvailabilityQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *AvailabilityQueryRequest, opts ...grpc.CallOption) (*AvailabilityQueryResponse, error)
+	// StreamQuery streams each FlatAvailability as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *AvailabilityQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatAvailability], error)
+	// Reset clears the sink's buffered availability telemetry.
 	Reset(ctx context.Context, in *AvailabilityResetRequest, opts ...grpc.CallOption) (*AvailabilityResetResponse, error)
 }
 
@@ -83,9 +89,15 @@ func (c *availabilityQueryServiceClient) Reset(ctx context.Context, in *Availabi
 // AvailabilityQueryServiceServer is the server API for AvailabilityQueryService service.
 // All implementations must embed UnimplementedAvailabilityQueryServiceServer
 // for forward compatibility.
+//
+// AvailabilityQueryService queries the availability telemetry the sink has
+// received.
 type AvailabilityQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *AvailabilityQueryRequest) (*AvailabilityQueryResponse, error)
+	// StreamQuery streams each FlatAvailability as it matches, over the same window.
 	StreamQuery(*AvailabilityQueryRequest, grpc.ServerStreamingServer[FlatAvailability]) error
+	// Reset clears the sink's buffered availability telemetry.
 	Reset(context.Context, *AvailabilityResetRequest) (*AvailabilityResetResponse, error)
 	mustEmbedUnimplementedAvailabilityQueryServiceServer()
 }

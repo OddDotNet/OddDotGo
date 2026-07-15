@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatMetric is one App Insights metric telemetry item paired with the envelope
+// it arrived under — the unit every metric query returns.
 type FlatMetric struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Metric        *v1.MetricTelemetry    `protobuf:"bytes,1,opt,name=metric,proto3" json:"metric,omitempty"`
-	Envelope      *v1.TelemetryEnvelope  `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched metric telemetry.
+	Metric *v1.MetricTelemetry `protobuf:"bytes,1,opt,name=metric,proto3" json:"metric,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AvailabilityQueryResponse is the unary Query reply: every availability item
+// that matched. Empty when the wait ended with no match. StreamQuery streams
+// the FlatAvailability items individually instead.
 type AvailabilityQueryResponse struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Availabilities []*FlatAvailability    `protobuf:"bytes,1,rep,name=availabilities,proto3" json:"availabilities,omitempty"`

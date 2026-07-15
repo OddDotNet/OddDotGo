@@ -15,8 +15,9 @@ type SpanQueryRequestBuilder struct {
 	configurator *WhereSpanFilterConfigurator
 }
 
-// NewSpanQueryRequestBuilder creates a new builder with defaults:
-// Take: TakeFirst, Duration: 30 seconds, no filters.
+// NewSpanQueryRequestBuilder creates a builder with defaults: TakeFirst, a
+// 30-second Wait, and no filters. See the package documentation for the Take
+// and Duration contract.
 func NewSpanQueryRequestBuilder() *SpanQueryRequestBuilder {
 	return &SpanQueryRequestBuilder{
 		request: &tracev1.SpanQueryRequest{
@@ -33,7 +34,9 @@ func NewSpanQueryRequestBuilder() *SpanQueryRequestBuilder {
 	}
 }
 
-// TakeFirst configures the request to take the first matching span.
+// TakeFirst configures the query to return as soon as the first matching span
+// is found, or when the Wait duration elapses if none is found. This is the
+// default.
 func (b *SpanQueryRequestBuilder) TakeFirst() *SpanQueryRequestBuilder {
 	b.request.Take = &commonv1.Take{
 		Value: &commonv1.Take_TakeFirst{
@@ -43,7 +46,8 @@ func (b *SpanQueryRequestBuilder) TakeFirst() *SpanQueryRequestBuilder {
 	return b
 }
 
-// TakeExact configures the request to take exactly count matching spans.
+// TakeExact configures the query to return as soon as count matching spans are
+// found, or when the Wait duration elapses with fewer than count found.
 func (b *SpanQueryRequestBuilder) TakeExact(count int32) *SpanQueryRequestBuilder {
 	b.request.Take = &commonv1.Take{
 		Value: &commonv1.Take_TakeExact{
@@ -55,7 +59,10 @@ func (b *SpanQueryRequestBuilder) TakeExact(count int32) *SpanQueryRequestBuilde
 	return b
 }
 
-// TakeAll configures the request to take all matching spans within the duration.
+// TakeAll configures the query to collect every matching span seen over the
+// whole Wait duration. TakeAll never returns early — the query always blocks
+// for the full duration — so prefer TakeFirst or TakeExact with a filter to
+// return as soon as a specific span arrives.
 func (b *SpanQueryRequestBuilder) TakeAll() *SpanQueryRequestBuilder {
 	b.request.Take = &commonv1.Take{
 		Value: &commonv1.Take_TakeAll{
@@ -65,7 +72,9 @@ func (b *SpanQueryRequestBuilder) TakeAll() *SpanQueryRequestBuilder {
 	return b
 }
 
-// Wait sets the duration to wait for matching spans.
+// Wait sets the maximum duration the query blocks for matching spans. A value
+// of zero or less selects the sink default of 30 seconds; it does not return
+// immediately.
 func (b *SpanQueryRequestBuilder) Wait(d time.Duration) *SpanQueryRequestBuilder {
 	ms := int32(d.Milliseconds())
 	if ms < 0 {

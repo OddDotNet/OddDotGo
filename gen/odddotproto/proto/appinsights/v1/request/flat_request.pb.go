@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatRequest is one request telemetry item paired with the envelope it arrived
+// under — the unit every request query returns.
 type FlatRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Request       *v1.RequestTelemetry   `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
-	Envelope      *v1.TelemetryEnvelope  `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched request telemetry.
+	Request *v1.RequestTelemetry `protobuf:"bytes,1,opt,name=request,proto3" json:"request,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

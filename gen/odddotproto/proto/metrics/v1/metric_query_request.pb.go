@@ -24,11 +24,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// MetricQueryRequest asks the sink for metrics matching filters, bounded by
+// take and duration.
 type MetricQueryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
-	Take          *v1.Take               `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
-	Duration      *v1.Duration           `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Filters a metric must satisfy to match. A metric must pass every filter
+	// (logical AND); an empty list matches all metrics.
+	Filters []*Where `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
+	// How many matching metrics end the wait early. Defaults to TakeFirst. See Take.
+	Take *v1.Take `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
+	// Maximum time to wait for matching metrics. Defaults to 30s. See Duration.
+	Duration      *v1.Duration `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -84,6 +90,9 @@ func (x *MetricQueryRequest) GetDuration() *v1.Duration {
 	return nil
 }
 
+// Where is one filter clause. Set exactly one field to choose what it matches;
+// an unset Where matches nothing. A query ANDs its Where clauses together (see
+// MetricQueryRequest.filters).
 type Where struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -195,26 +204,32 @@ type isWhere_Value interface {
 }
 
 type Where_Property struct {
+	// Match a field of the metric itself.
 	Property *PropertyFilter `protobuf:"bytes,1,opt,name=property,proto3,oneof"`
 }
 
 type Where_Or struct {
+	// Match when ANY of the nested clauses matches (logical OR).
 	Or *OrFilter `protobuf:"bytes,2,opt,name=or,proto3,oneof"`
 }
 
 type Where_InstrumentationScope struct {
+	// Match the metric's instrumentation scope.
 	InstrumentationScope *v1.InstrumentationScopeFilter `protobuf:"bytes,3,opt,name=instrumentation_scope,json=instrumentationScope,proto3,oneof"`
 }
 
 type Where_Resource struct {
+	// Match the metric's resource.
 	Resource *v11.ResourceFilter `protobuf:"bytes,4,opt,name=resource,proto3,oneof"`
 }
 
 type Where_InstrumentationScopeSchemaUrl struct {
+	// Match the instrumentation scope's schema URL.
 	InstrumentationScopeSchemaUrl *v1.StringProperty `protobuf:"bytes,5,opt,name=instrumentation_scope_schema_url,json=instrumentationScopeSchemaUrl,proto3,oneof"`
 }
 
 type Where_ResourceSchemaUrl struct {
+	// Match the resource's schema URL.
 	ResourceSchemaUrl *v1.StringProperty `protobuf:"bytes,6,opt,name=resource_schema_url,json=resourceSchemaUrl,proto3,oneof"`
 }
 
@@ -230,6 +245,13 @@ func (*Where_InstrumentationScopeSchemaUrl) isWhere_Value() {}
 
 func (*Where_ResourceSchemaUrl) isWhere_Value() {}
 
+// PropertyFilter matches a single field of the metric. Set exactly one field;
+// an unset PropertyFilter matches nothing. Fields mirror the OpenTelemetry
+// Metric.
+//
+// The gauge/sum/histogram/exponential_histogram/summary fields select on the
+// metric's data type: each matches ONLY metrics carrying that data type (a
+// gauge filter never matches a sum metric, and vice versa).
 type PropertyFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -424,6 +446,8 @@ func (*PropertyFilter_Summary) isPropertyFilter_Value() {}
 
 func (*PropertyFilter_Metadata) isPropertyFilter_Value() {}
 
+// GaugeFilter matches a gauge metric. Set exactly one field; an unset
+// GaugeFilter matches nothing.
 type GaugeFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -485,11 +509,14 @@ type isGaugeFilter_Value interface {
 }
 
 type GaugeFilter_DataPoint struct {
+	// Match when ANY of the gauge's data points satisfies the filter.
 	DataPoint *NumberDataPointFilter `protobuf:"bytes,1,opt,name=data_point,json=dataPoint,proto3,oneof"`
 }
 
 func (*GaugeFilter_DataPoint) isGaugeFilter_Value() {}
 
+// SumFilter matches a sum metric. Set exactly one field; an unset SumFilter
+// matches nothing.
 type SumFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -571,6 +598,7 @@ type isSumFilter_Value interface {
 }
 
 type SumFilter_DataPoint struct {
+	// Match when ANY of the sum's data points satisfies the filter.
 	DataPoint *NumberDataPointFilter `protobuf:"bytes,1,opt,name=data_point,json=dataPoint,proto3,oneof"`
 }
 
@@ -588,6 +616,8 @@ func (*SumFilter_AggregationTemporality) isSumFilter_Value() {}
 
 func (*SumFilter_IsMonotonic) isSumFilter_Value() {}
 
+// HistogramFilter matches a histogram metric. Set exactly one field; an unset
+// HistogramFilter matches nothing.
 type HistogramFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -659,6 +689,7 @@ type isHistogramFilter_Value interface {
 }
 
 type HistogramFilter_DataPoint struct {
+	// Match when ANY of the histogram's data points satisfies the filter.
 	DataPoint *HistogramDataPointFilter `protobuf:"bytes,1,opt,name=data_point,json=dataPoint,proto3,oneof"`
 }
 
@@ -670,6 +701,8 @@ func (*HistogramFilter_DataPoint) isHistogramFilter_Value() {}
 
 func (*HistogramFilter_AggregationTemporality) isHistogramFilter_Value() {}
 
+// ExponentialHistogramFilter matches an exponential-histogram metric. Set
+// exactly one field; an unset filter matches nothing.
 type ExponentialHistogramFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -741,6 +774,7 @@ type isExponentialHistogramFilter_Value interface {
 }
 
 type ExponentialHistogramFilter_DataPoint struct {
+	// Match when ANY of the data points satisfies the filter.
 	DataPoint *ExponentialHistogramDataPointFilter `protobuf:"bytes,1,opt,name=data_point,json=dataPoint,proto3,oneof"`
 }
 
@@ -752,6 +786,8 @@ func (*ExponentialHistogramFilter_DataPoint) isExponentialHistogramFilter_Value(
 
 func (*ExponentialHistogramFilter_AggregationTemporality) isExponentialHistogramFilter_Value() {}
 
+// SummaryFilter matches a summary metric. Set exactly one field; an unset
+// SummaryFilter matches nothing.
 type SummaryFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -813,11 +849,14 @@ type isSummaryFilter_Value interface {
 }
 
 type SummaryFilter_DataPoint struct {
+	// Match when ANY of the summary's data points satisfies the filter.
 	DataPoint *SummaryDataPointFilter `protobuf:"bytes,1,opt,name=data_point,json=dataPoint,proto3,oneof"`
 }
 
 func (*SummaryFilter_DataPoint) isSummaryFilter_Value() {}
 
+// HistogramDataPointFilter matches one histogram data point. Set exactly one
+// field; an unset filter matches nothing.
 type HistogramDataPointFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -999,14 +1038,17 @@ type HistogramDataPointFilter_Sum struct {
 }
 
 type HistogramDataPointFilter_BucketCount struct {
+	// Match when ANY of the point's per-bucket counts satisfies the filter.
 	BucketCount *v1.UInt64Property `protobuf:"bytes,6,opt,name=bucket_count,json=bucketCount,proto3,oneof"`
 }
 
 type HistogramDataPointFilter_ExplicitBound struct {
+	// Match when ANY of the point's explicit bounds satisfies the filter.
 	ExplicitBound *v1.DoubleProperty `protobuf:"bytes,7,opt,name=explicit_bound,json=explicitBound,proto3,oneof"`
 }
 
 type HistogramDataPointFilter_Exemplar struct {
+	// Match when ANY of the point's exemplars satisfies the filter.
 	Exemplar *ExemplarFilter `protobuf:"bytes,8,opt,name=exemplar,proto3,oneof"`
 }
 
@@ -1044,6 +1086,8 @@ func (*HistogramDataPointFilter_Min) isHistogramDataPointFilter_Value() {}
 
 func (*HistogramDataPointFilter_Max) isHistogramDataPointFilter_Value() {}
 
+// ExponentialHistogramDataPointFilter matches one exponential-histogram data
+// point. Set exactly one field; an unset filter matches nothing.
 type ExponentialHistogramDataPointFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -1263,10 +1307,12 @@ type ExponentialHistogramDataPointFilter_ZeroCount struct {
 }
 
 type ExponentialHistogramDataPointFilter_Positive struct {
+	// Match when ANY bucket in the point's positive range satisfies the filter.
 	Positive *BucketFilter `protobuf:"bytes,8,opt,name=positive,proto3,oneof"`
 }
 
 type ExponentialHistogramDataPointFilter_Negative struct {
+	// Match when ANY bucket in the point's negative range satisfies the filter.
 	Negative *BucketFilter `protobuf:"bytes,9,opt,name=negative,proto3,oneof"`
 }
 
@@ -1275,6 +1321,7 @@ type ExponentialHistogramDataPointFilter_Flags struct {
 }
 
 type ExponentialHistogramDataPointFilter_Exemplar struct {
+	// Match when ANY of the point's exemplars satisfies the filter.
 	Exemplar *ExemplarFilter `protobuf:"bytes,11,opt,name=exemplar,proto3,oneof"`
 }
 
@@ -1322,6 +1369,8 @@ func (*ExponentialHistogramDataPointFilter_Max) isExponentialHistogramDataPointF
 func (*ExponentialHistogramDataPointFilter_ZeroThreshold) isExponentialHistogramDataPointFilter_Value() {
 }
 
+// BucketFilter matches the positive or negative buckets of an exponential
+// histogram data point. Set exactly one field; an unset filter matches nothing.
 type BucketFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -1397,6 +1446,7 @@ type BucketFilter_Offset struct {
 }
 
 type BucketFilter_BucketCount struct {
+	// Match when ANY of the bucket counts satisfies the filter.
 	BucketCount *v1.UInt64Property `protobuf:"bytes,2,opt,name=bucket_count,json=bucketCount,proto3,oneof"`
 }
 
@@ -1404,6 +1454,8 @@ func (*BucketFilter_Offset) isBucketFilter_Value() {}
 
 func (*BucketFilter_BucketCount) isBucketFilter_Value() {}
 
+// NumberDataPointFilter matches one gauge or sum data point. Set exactly one
+// field; an unset filter matches nothing.
 type NumberDataPointFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -1537,14 +1589,17 @@ type NumberDataPointFilter_TimeUnixNano struct {
 }
 
 type NumberDataPointFilter_ValueAsDouble struct {
+	// Match the point's value when it is a double.
 	ValueAsDouble *v1.DoubleProperty `protobuf:"bytes,4,opt,name=value_as_double,json=valueAsDouble,proto3,oneof"`
 }
 
 type NumberDataPointFilter_ValueAsInt struct {
+	// Match the point's value when it is an int.
 	ValueAsInt *v1.Int64Property `protobuf:"bytes,6,opt,name=value_as_int,json=valueAsInt,proto3,oneof"`
 }
 
 type NumberDataPointFilter_Exemplar struct {
+	// Match when ANY of the point's exemplars satisfies the filter.
 	Exemplar *ExemplarFilter `protobuf:"bytes,5,opt,name=exemplar,proto3,oneof"`
 }
 
@@ -1566,6 +1621,8 @@ func (*NumberDataPointFilter_Exemplar) isNumberDataPointFilter_Value() {}
 
 func (*NumberDataPointFilter_Flags) isNumberDataPointFilter_Value() {}
 
+// SummaryDataPointFilter matches one summary data point. Set exactly one field;
+// an unset filter matches nothing.
 type SummaryDataPointFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -1707,6 +1764,7 @@ type SummaryDataPointFilter_Sum struct {
 }
 
 type SummaryDataPointFilter_QuantileValue struct {
+	// Match when ANY of the point's quantile values satisfies the filter.
 	QuantileValue *ValueAtQuantileFilter `protobuf:"bytes,6,opt,name=quantile_value,json=quantileValue,proto3,oneof"`
 }
 
@@ -1728,6 +1786,8 @@ func (*SummaryDataPointFilter_QuantileValue) isSummaryDataPointFilter_Value() {}
 
 func (*SummaryDataPointFilter_Flags) isSummaryDataPointFilter_Value() {}
 
+// ExemplarFilter matches one exemplar attached to a data point. Set exactly one
+// field; an unset filter matches nothing.
 type ExemplarFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -1847,10 +1907,12 @@ type ExemplarFilter_TimeUnixNano struct {
 }
 
 type ExemplarFilter_ValueAsDouble struct {
+	// Match the exemplar's value when it is a double.
 	ValueAsDouble *v1.DoubleProperty `protobuf:"bytes,3,opt,name=value_as_double,json=valueAsDouble,proto3,oneof"`
 }
 
 type ExemplarFilter_ValueAsInt struct {
+	// Match the exemplar's value when it is an int.
 	ValueAsInt *v1.Int64Property `protobuf:"bytes,4,opt,name=value_as_int,json=valueAsInt,proto3,oneof"`
 }
 
@@ -1874,6 +1936,8 @@ func (*ExemplarFilter_SpanId) isExemplarFilter_Value() {}
 
 func (*ExemplarFilter_TraceId) isExemplarFilter_Value() {}
 
+// OrFilter matches when ANY of its nested Where clauses matches (logical OR),
+// letting you express disjunctions inside the otherwise-AND filter list.
 type OrFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
@@ -1918,6 +1982,9 @@ func (x *OrFilter) GetFilters() []*Where {
 	return nil
 }
 
+// AggregationTemporalityProperty compares a metric's aggregation temporality
+// against an OTLP AggregationTemporality via EQUALS / NOT_EQUALS. See
+// EnumCompareAsType.
 type AggregationTemporalityProperty struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	CompareAs     v1.EnumCompareAsType       `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.EnumCompareAsType" json:"compare_as,omitempty"`
@@ -1970,6 +2037,8 @@ func (x *AggregationTemporalityProperty) GetCompare() v12.AggregationTemporality
 	return v12.AggregationTemporality(0)
 }
 
+// ValueAtQuantileFilter matches one (quantile, value) pair of a summary data
+// point. Set exactly one field; an unset filter matches nothing.
 type ValueAtQuantileFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Property:
@@ -2041,10 +2110,12 @@ type isValueAtQuantileFilter_Property interface {
 }
 
 type ValueAtQuantileFilter_Quantile struct {
+	// Match the quantile (e.g. 0.99).
 	Quantile *v1.DoubleProperty `protobuf:"bytes,1,opt,name=quantile,proto3,oneof"`
 }
 
 type ValueAtQuantileFilter_Value struct {
+	// Match the value recorded at that quantile.
 	Value *v1.DoubleProperty `protobuf:"bytes,2,opt,name=value,proto3,oneof"`
 }
 

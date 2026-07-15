@@ -22,6 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// EnvelopeFilter matches the telemetry envelope. Set exactly one field.
 type EnvelopeFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -103,14 +104,17 @@ type isEnvelopeFilter_Value interface {
 }
 
 type EnvelopeFilter_InstrumentationKey struct {
+	// Match the instrumentation key.
 	InstrumentationKey *v1.StringProperty `protobuf:"bytes,1,opt,name=instrumentation_key,json=instrumentationKey,proto3,oneof"`
 }
 
 type EnvelopeFilter_Time struct {
+	// Match the ISO-8601 creation timestamp (compared as a string).
 	Time *v1.StringProperty `protobuf:"bytes,2,opt,name=time,proto3,oneof"`
 }
 
 type EnvelopeFilter_Context struct {
+	// Match a field of the telemetry context.
 	Context *ContextFilter `protobuf:"bytes,3,opt,name=context,proto3,oneof"`
 }
 
@@ -120,6 +124,9 @@ func (*EnvelopeFilter_Time) isEnvelopeFilter_Value() {}
 
 func (*EnvelopeFilter_Context) isEnvelopeFilter_Value() {}
 
+// ContextFilter matches one of the envelope's context objects. Set exactly one
+// field; the chosen sub-filter then selects which of that object's fields to
+// match.
 type ContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -298,6 +305,8 @@ func (*ContextFilter_Application) isContextFilter_Value() {}
 
 func (*ContextFilter_Internal) isContextFilter_Value() {}
 
+// OperationContextFilter matches one field of the operation context. Set
+// exactly one field.
 type OperationContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -428,6 +437,8 @@ func (*OperationContextFilter_SyntheticSource) isOperationContextFilter_Value() 
 
 func (*OperationContextFilter_CorrelationVector) isOperationContextFilter_Value() {}
 
+// CloudContextFilter matches one field of the cloud context. Set exactly one
+// field.
 type CloudContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -510,6 +521,8 @@ func (*CloudContextFilter_RoleName) isCloudContextFilter_Value() {}
 
 func (*CloudContextFilter_RoleInstance) isCloudContextFilter_Value() {}
 
+// DeviceContextFilter matches one field of the device context. Set exactly one
+// field.
 type DeviceContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -608,6 +621,8 @@ func (*DeviceContextFilter_Type) isDeviceContextFilter_Value() {}
 
 func (*DeviceContextFilter_OsVersion) isDeviceContextFilter_Value() {}
 
+// UserContextFilter matches one field of the user context. Set exactly one
+// field.
 type UserContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -706,6 +721,8 @@ func (*UserContextFilter_AuthenticatedId) isUserContextFilter_Value() {}
 
 func (*UserContextFilter_AccountId) isUserContextFilter_Value() {}
 
+// SessionContextFilter matches one field of the session context. Set exactly
+// one field.
 type SessionContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -788,6 +805,8 @@ func (*SessionContextFilter_Id) isSessionContextFilter_Value() {}
 
 func (*SessionContextFilter_IsFirst) isSessionContextFilter_Value() {}
 
+// LocationContextFilter matches one field of the location context. Set exactly
+// one field.
 type LocationContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -902,6 +921,8 @@ func (*LocationContextFilter_Province) isLocationContextFilter_Value() {}
 
 func (*LocationContextFilter_City) isLocationContextFilter_Value() {}
 
+// ApplicationContextFilter matches the application context. Set exactly one
+// field.
 type ApplicationContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -968,6 +989,8 @@ type ApplicationContextFilter_Version struct {
 
 func (*ApplicationContextFilter_Version) isApplicationContextFilter_Value() {}
 
+// InternalContextFilter matches one field of the internal SDK context. Set
+// exactly one field.
 type InternalContextFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -1066,11 +1089,15 @@ func (*InternalContextFilter_AgentVersion) isInternalContextFilter_Value() {}
 
 func (*InternalContextFilter_NodeName) isInternalContextFilter_Value() {}
 
-// Custom property/measurement filters
+// PropertyMapProperty matches one entry of a telemetry item's custom string
+// `properties` map: the entry keyed by `key` must exist AND its value must
+// satisfy `value` (StringProperty). A missing key does not match.
 type PropertyMapProperty struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value         *v1.StringProperty     `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Map key to look up. Must be present for the filter to match.
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// StringProperty comparison applied to the entry's value.
+	Value         *v1.StringProperty `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1119,10 +1146,15 @@ func (x *PropertyMapProperty) GetValue() *v1.StringProperty {
 	return nil
 }
 
+// MeasurementMapProperty matches one entry of a telemetry item's custom numeric
+// `measurements` map: the entry keyed by `key` must exist AND its value must
+// satisfy `value` (DoubleProperty). A missing key does not match.
 type MeasurementMapProperty struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value         *v1.DoubleProperty     `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Map key to look up. Must be present for the filter to match.
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// DoubleProperty comparison applied to the entry's value.
+	Value         *v1.DoubleProperty `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1171,7 +1203,9 @@ func (x *MeasurementMapProperty) GetValue() *v1.DoubleProperty {
 	return nil
 }
 
-// Severity level filter (used by Exception and Trace)
+// SeverityLevelProperty compares a telemetry item's severity level against a
+// SeverityLevel via EQUALS / NOT_EQUALS. Used by Exception and Trace. See
+// EnumCompareAsType.
 type SeverityLevelProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     v1.EnumCompareAsType   `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.EnumCompareAsType" json:"compare_as,omitempty"`
