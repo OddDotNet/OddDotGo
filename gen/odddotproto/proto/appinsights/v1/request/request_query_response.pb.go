@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// RequestQueryResponse is the unary Query reply: every request item that
+// matched. Empty when the wait ended with no match. StreamQuery streams the
+// FlatRequest items individually instead.
 type RequestQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Requests      []*FlatRequest         `protobuf:"bytes,1,rep,name=requests,proto3" json:"requests,omitempty"`

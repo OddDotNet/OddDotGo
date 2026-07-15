@@ -27,9 +27,14 @@ const (
 // EventQueryServiceClient is the client API for EventQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// EventQueryService queries the custom-event telemetry the sink has received.
 type EventQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *EventQueryRequest, opts ...grpc.CallOption) (*EventQueryResponse, error)
+	// StreamQuery streams each FlatEvent as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *EventQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatEvent], error)
+	// Reset clears the sink's buffered event telemetry.
 	Reset(ctx context.Context, in *EventResetRequest, opts ...grpc.CallOption) (*EventResetResponse, error)
 }
 
@@ -83,9 +88,14 @@ func (c *eventQueryServiceClient) Reset(ctx context.Context, in *EventResetReque
 // EventQueryServiceServer is the server API for EventQueryService service.
 // All implementations must embed UnimplementedEventQueryServiceServer
 // for forward compatibility.
+//
+// EventQueryService queries the custom-event telemetry the sink has received.
 type EventQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *EventQueryRequest) (*EventQueryResponse, error)
+	// StreamQuery streams each FlatEvent as it matches, over the same window.
 	StreamQuery(*EventQueryRequest, grpc.ServerStreamingServer[FlatEvent]) error
+	// Reset clears the sink's buffered event telemetry.
 	Reset(context.Context, *EventResetRequest) (*EventResetResponse, error)
 	mustEmbedUnimplementedEventQueryServiceServer()
 }

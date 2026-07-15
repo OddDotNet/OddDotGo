@@ -26,8 +26,14 @@ const (
 // LogQueryServiceClient is the client API for LogQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// LogQueryService queries the logs the sink has received.
 type LogQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at
+	// once. See LogQueryRequest.
 	Query(ctx context.Context, in *LogQueryRequest, opts ...grpc.CallOption) (*LogQueryResponse, error)
+	// StreamQuery runs the same query but streams each FlatLog as it matches,
+	// over the same Take/Duration window.
 	StreamQuery(ctx context.Context, in *LogQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatLog], error)
 }
 
@@ -71,8 +77,14 @@ type LogQueryService_StreamQueryClient = grpc.ServerStreamingClient[FlatLog]
 // LogQueryServiceServer is the server API for LogQueryService service.
 // All implementations must embed UnimplementedLogQueryServiceServer
 // for forward compatibility.
+//
+// LogQueryService queries the logs the sink has received.
 type LogQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at
+	// once. See LogQueryRequest.
 	Query(context.Context, *LogQueryRequest) (*LogQueryResponse, error)
+	// StreamQuery runs the same query but streams each FlatLog as it matches,
+	// over the same Take/Duration window.
 	StreamQuery(*LogQueryRequest, grpc.ServerStreamingServer[FlatLog]) error
 	mustEmbedUnimplementedLogQueryServiceServer()
 }

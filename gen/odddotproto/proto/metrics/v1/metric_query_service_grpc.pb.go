@@ -26,8 +26,14 @@ const (
 // MetricQueryServiceClient is the client API for MetricQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// MetricQueryService queries the metrics the sink has received.
 type MetricQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at
+	// once. See MetricQueryRequest.
 	Query(ctx context.Context, in *MetricQueryRequest, opts ...grpc.CallOption) (*MetricQueryResponse, error)
+	// StreamQuery runs the same query but streams each FlatMetric as it matches,
+	// over the same Take/Duration window.
 	StreamQuery(ctx context.Context, in *MetricQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatMetric], error)
 }
 
@@ -71,8 +77,14 @@ type MetricQueryService_StreamQueryClient = grpc.ServerStreamingClient[FlatMetri
 // MetricQueryServiceServer is the server API for MetricQueryService service.
 // All implementations must embed UnimplementedMetricQueryServiceServer
 // for forward compatibility.
+//
+// MetricQueryService queries the metrics the sink has received.
 type MetricQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at
+	// once. See MetricQueryRequest.
 	Query(context.Context, *MetricQueryRequest) (*MetricQueryResponse, error)
+	// StreamQuery runs the same query but streams each FlatMetric as it matches,
+	// over the same Take/Duration window.
 	StreamQuery(*MetricQueryRequest, grpc.ServerStreamingServer[FlatMetric]) error
 	mustEmbedUnimplementedMetricQueryServiceServer()
 }

@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatDependency is one dependency-call telemetry item paired with the envelope
+// it arrived under — the unit every dependency query returns.
 type FlatDependency struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	Dependency    *v1.DependencyTelemetry `protobuf:"bytes,1,opt,name=dependency,proto3" json:"dependency,omitempty"`
-	Envelope      *v1.TelemetryEnvelope   `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched dependency telemetry.
+	Dependency *v1.DependencyTelemetry `protobuf:"bytes,1,opt,name=dependency,proto3" json:"dependency,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

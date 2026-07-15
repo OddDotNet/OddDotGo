@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatException is one exception telemetry item paired with the envelope it
+// arrived under — the unit every exception query returns.
 type FlatException struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Exception     *v1.ExceptionTelemetry `protobuf:"bytes,1,opt,name=exception,proto3" json:"exception,omitempty"`
-	Envelope      *v1.TelemetryEnvelope  `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched exception telemetry.
+	Exception *v1.ExceptionTelemetry `protobuf:"bytes,1,opt,name=exception,proto3" json:"exception,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

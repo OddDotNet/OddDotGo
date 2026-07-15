@@ -27,9 +27,14 @@ const (
 // DependencyQueryServiceClient is the client API for DependencyQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// DependencyQueryService queries the dependency telemetry the sink has received.
 type DependencyQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *DependencyQueryRequest, opts ...grpc.CallOption) (*DependencyQueryResponse, error)
+	// StreamQuery streams each FlatDependency as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *DependencyQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatDependency], error)
+	// Reset clears the sink's buffered dependency telemetry.
 	Reset(ctx context.Context, in *DependencyResetRequest, opts ...grpc.CallOption) (*DependencyResetResponse, error)
 }
 
@@ -83,9 +88,14 @@ func (c *dependencyQueryServiceClient) Reset(ctx context.Context, in *Dependency
 // DependencyQueryServiceServer is the server API for DependencyQueryService service.
 // All implementations must embed UnimplementedDependencyQueryServiceServer
 // for forward compatibility.
+//
+// DependencyQueryService queries the dependency telemetry the sink has received.
 type DependencyQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *DependencyQueryRequest) (*DependencyQueryResponse, error)
+	// StreamQuery streams each FlatDependency as it matches, over the same window.
 	StreamQuery(*DependencyQueryRequest, grpc.ServerStreamingServer[FlatDependency]) error
+	// Reset clears the sink's buffered dependency telemetry.
 	Reset(context.Context, *DependencyResetRequest) (*DependencyResetResponse, error)
 	mustEmbedUnimplementedDependencyQueryServiceServer()
 }

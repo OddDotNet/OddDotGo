@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// LogQueryResponse is the unary Query reply: every log that matched, each
+// flattened with its resource and scope. Empty when the wait ended with no
+// match. StreamQuery streams the FlatLogs individually instead.
 type LogQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Logs          []*FlatLog             `protobuf:"bytes,1,rep,name=logs,proto3" json:"logs,omitempty"`

@@ -21,6 +21,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ExceptionResetRequest asks the sink to discard every buffered exception item.
+// It takes no arguments; the reset is unconditional.
 type ExceptionResetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields

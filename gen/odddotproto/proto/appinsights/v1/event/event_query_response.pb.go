@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// EventQueryResponse is the unary Query reply: every event item that matched.
+// Empty when the wait ended with no match. StreamQuery streams the FlatEvent
+// items individually instead.
 type EventQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Events        []*FlatEvent           `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`

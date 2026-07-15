@@ -22,6 +22,12 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// ResourceFilter matches a signal's resource on one of its fields.
+//
+// Set exactly one field: the filter constrains only that dimension of the
+// resource. Leaving the oneof unset matches nothing. To constrain both
+// dimensions, add two ResourceFilters to the query — filters combine with AND
+// (see the query-request protos).
 type ResourceFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -93,10 +99,12 @@ type isResourceFilter_Value interface {
 }
 
 type ResourceFilter_Attributes struct {
+	// Match the resource's attributes (e.g. service.name, host.name).
 	Attributes *v1.KeyValueListProperty `protobuf:"bytes,1,opt,name=attributes,proto3,oneof"`
 }
 
 type ResourceFilter_DroppedAttributesCount struct {
+	// Match the count of attributes dropped from the resource.
 	DroppedAttributesCount *v1.UInt32Property `protobuf:"bytes,2,opt,name=dropped_attributes_count,json=droppedAttributesCount,proto3,oneof"`
 }
 

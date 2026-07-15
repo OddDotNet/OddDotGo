@@ -27,9 +27,14 @@ const (
 // ExceptionQueryServiceClient is the client API for ExceptionQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// ExceptionQueryService queries the exception telemetry the sink has received.
 type ExceptionQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *ExceptionQueryRequest, opts ...grpc.CallOption) (*ExceptionQueryResponse, error)
+	// StreamQuery streams each FlatException as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *ExceptionQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatException], error)
+	// Reset clears the sink's buffered exception telemetry.
 	Reset(ctx context.Context, in *ExceptionResetRequest, opts ...grpc.CallOption) (*ExceptionResetResponse, error)
 }
 
@@ -83,9 +88,14 @@ func (c *exceptionQueryServiceClient) Reset(ctx context.Context, in *ExceptionRe
 // ExceptionQueryServiceServer is the server API for ExceptionQueryService service.
 // All implementations must embed UnimplementedExceptionQueryServiceServer
 // for forward compatibility.
+//
+// ExceptionQueryService queries the exception telemetry the sink has received.
 type ExceptionQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *ExceptionQueryRequest) (*ExceptionQueryResponse, error)
+	// StreamQuery streams each FlatException as it matches, over the same window.
 	StreamQuery(*ExceptionQueryRequest, grpc.ServerStreamingServer[FlatException]) error
+	// Reset clears the sink's buffered exception telemetry.
 	Reset(context.Context, *ExceptionResetRequest) (*ExceptionResetResponse, error)
 	mustEmbedUnimplementedExceptionQueryServiceServer()
 }

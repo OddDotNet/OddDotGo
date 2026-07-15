@@ -21,16 +21,25 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// NumberCompareAsType is the comparison verb for the numeric *Property types
+// (Int32/64, UInt32/64, Double).
 type NumberCompareAsType int32
 
 const (
-	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_NONE_UNSPECIFIED    NumberCompareAsType = 0
-	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_EQUALS              NumberCompareAsType = 1
-	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_NOT_EQUALS          NumberCompareAsType = 2
-	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_GREATER_THAN        NumberCompareAsType = 3
+	// Matches nothing. Set a real verb.
+	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_NONE_UNSPECIFIED NumberCompareAsType = 0
+	// actual == compare.
+	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_EQUALS NumberCompareAsType = 1
+	// actual != compare.
+	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_NOT_EQUALS NumberCompareAsType = 2
+	// actual > compare.
+	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_GREATER_THAN NumberCompareAsType = 3
+	// actual >= compare.
 	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_GREATER_THAN_EQUALS NumberCompareAsType = 4
-	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_LESS_THAN           NumberCompareAsType = 5
-	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_LESS_THAN_EQUALS    NumberCompareAsType = 6
+	// actual < compare.
+	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_LESS_THAN NumberCompareAsType = 5
+	// actual <= compare.
+	NumberCompareAsType_NUMBER_COMPARE_AS_TYPE_LESS_THAN_EQUALS NumberCompareAsType = 6
 )
 
 // Enum value maps for NumberCompareAsType.
@@ -82,12 +91,17 @@ func (NumberCompareAsType) EnumDescriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_properties_proto_rawDescGZIP(), []int{0}
 }
 
+// EnumCompareAsType is the comparison verb for enum-valued signal fields, used
+// by the signal-specific enum properties (e.g. span kind, span status code).
 type EnumCompareAsType int32
 
 const (
+	// Matches nothing. Set a real verb.
 	EnumCompareAsType_ENUM_COMPARE_AS_TYPE_NONE_UNSPECIFIED EnumCompareAsType = 0
-	EnumCompareAsType_ENUM_COMPARE_AS_TYPE_EQUALS           EnumCompareAsType = 1
-	EnumCompareAsType_ENUM_COMPARE_AS_TYPE_NOT_EQUALS       EnumCompareAsType = 2
+	// actual == compare.
+	EnumCompareAsType_ENUM_COMPARE_AS_TYPE_EQUALS EnumCompareAsType = 1
+	// actual != compare.
+	EnumCompareAsType_ENUM_COMPARE_AS_TYPE_NOT_EQUALS EnumCompareAsType = 2
 )
 
 // Enum value maps for EnumCompareAsType.
@@ -131,12 +145,16 @@ func (EnumCompareAsType) EnumDescriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_properties_proto_rawDescGZIP(), []int{1}
 }
 
+// BoolCompareAsType is the comparison verb for BoolProperty.
 type BoolCompareAsType int32
 
 const (
+	// Matches nothing. Set a real verb.
 	BoolCompareAsType_BOOL_COMPARE_AS_TYPE_NONE_UNSPECIFIED BoolCompareAsType = 0
-	BoolCompareAsType_BOOL_COMPARE_AS_TYPE_EQUALS           BoolCompareAsType = 1
-	BoolCompareAsType_BOOL_COMPARE_AS_TYPE_NOT_EQUALS       BoolCompareAsType = 2
+	// actual == compare.
+	BoolCompareAsType_BOOL_COMPARE_AS_TYPE_EQUALS BoolCompareAsType = 1
+	// actual != compare.
+	BoolCompareAsType_BOOL_COMPARE_AS_TYPE_NOT_EQUALS BoolCompareAsType = 2
 )
 
 // Enum value maps for BoolCompareAsType.
@@ -180,14 +198,20 @@ func (BoolCompareAsType) EnumDescriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_properties_proto_rawDescGZIP(), []int{2}
 }
 
+// ByteStringCompareAsType is the comparison verb for ByteStringProperty.
 type ByteStringCompareAsType int32
 
 const (
+	// Matches nothing. Set a real verb.
 	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_NONE_UNSPECIFIED ByteStringCompareAsType = 0
-	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_EQUALS           ByteStringCompareAsType = 1
-	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_NOT_EQUALS       ByteStringCompareAsType = 2
-	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_EMPTY            ByteStringCompareAsType = 3
-	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_NOT_EMPTY        ByteStringCompareAsType = 4
+	// Raw bytes equal compare.
+	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_EQUALS ByteStringCompareAsType = 1
+	// Raw bytes do not equal compare.
+	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_NOT_EQUALS ByteStringCompareAsType = 2
+	// Field has zero length. `compare` is ignored.
+	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_EMPTY ByteStringCompareAsType = 3
+	// Field has non-zero length. `compare` is ignored.
+	ByteStringCompareAsType_BYTE_STRING_COMPARE_AS_TYPE_NOT_EMPTY ByteStringCompareAsType = 4
 )
 
 // Enum value maps for ByteStringCompareAsType.
@@ -235,16 +259,24 @@ func (ByteStringCompareAsType) EnumDescriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_properties_proto_rawDescGZIP(), []int{3}
 }
 
+// StringCompareAsType is the comparison verb for StringProperty.
 type StringCompareAsType int32
 
 const (
+	// Matches nothing. Set a real verb.
 	StringCompareAsType_STRING_COMPARE_AS_TYPE_NONE_UNSPECIFIED StringCompareAsType = 0
-	StringCompareAsType_STRING_COMPARE_AS_TYPE_EQUALS           StringCompareAsType = 1
-	StringCompareAsType_STRING_COMPARE_AS_TYPE_NOT_EQUALS       StringCompareAsType = 2
-	StringCompareAsType_STRING_COMPARE_AS_TYPE_CONTAINS         StringCompareAsType = 3
-	StringCompareAsType_STRING_COMPARE_AS_TYPE_NOT_CONTAINS     StringCompareAsType = 4
-	StringCompareAsType_STRING_COMPARE_AS_TYPE_IS_EMPTY         StringCompareAsType = 5
-	StringCompareAsType_STRING_COMPARE_AS_TYPE_IS_NOT_EMPTY     StringCompareAsType = 6
+	// Ordinal (case-sensitive) equality with compare.
+	StringCompareAsType_STRING_COMPARE_AS_TYPE_EQUALS StringCompareAsType = 1
+	// Ordinal inequality with compare.
+	StringCompareAsType_STRING_COMPARE_AS_TYPE_NOT_EQUALS StringCompareAsType = 2
+	// Field contains compare as a substring.
+	StringCompareAsType_STRING_COMPARE_AS_TYPE_CONTAINS StringCompareAsType = 3
+	// Field does not contain compare as a substring.
+	StringCompareAsType_STRING_COMPARE_AS_TYPE_NOT_CONTAINS StringCompareAsType = 4
+	// Field is null or the empty string. `compare` is ignored.
+	StringCompareAsType_STRING_COMPARE_AS_TYPE_IS_EMPTY StringCompareAsType = 5
+	// Field is neither null nor empty. `compare` is ignored.
+	StringCompareAsType_STRING_COMPARE_AS_TYPE_IS_NOT_EMPTY StringCompareAsType = 6
 )
 
 // Enum value maps for StringCompareAsType.
@@ -296,10 +328,18 @@ func (StringCompareAsType) EnumDescriptor() ([]byte, []int) {
 	return file_odddotproto_proto_common_v1_properties_proto_rawDescGZIP(), []int{4}
 }
 
+// StringProperty compares a string field.
+//
+// EQUALS / NOT_EQUALS use ordinal (byte-for-byte, case-sensitive) comparison.
+// CONTAINS / NOT_CONTAINS test for `compare` as a substring. IS_EMPTY /
+// IS_NOT_EMPTY test whether the field is null or the empty string and ignore
+// `compare`.
 type StringProperty struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	CompareAs     StringCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.StringCompareAsType" json:"compare_as,omitempty"`
-	Compare       *string                `protobuf:"bytes,2,opt,name=compare,proto3,oneof" json:"compare,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	CompareAs StringCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.StringCompareAsType" json:"compare_as,omitempty"`
+	// Operand to compare against. Unused (may be omitted) for IS_EMPTY and
+	// IS_NOT_EMPTY, which look only at the field itself.
+	Compare       *string `protobuf:"bytes,2,opt,name=compare,proto3,oneof" json:"compare,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -348,10 +388,15 @@ func (x *StringProperty) GetCompare() string {
 	return ""
 }
 
+// ByteStringProperty compares a bytes field (e.g. a trace or span id).
+//
+// EQUALS / NOT_EQUALS compare the raw bytes. EMPTY / NOT_EMPTY test whether the
+// field has zero length and ignore `compare`.
 type ByteStringProperty struct {
-	state         protoimpl.MessageState  `protogen:"open.v1"`
-	CompareAs     ByteStringCompareAsType `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.ByteStringCompareAsType" json:"compare_as,omitempty"`
-	Compare       []byte                  `protobuf:"bytes,2,opt,name=compare,proto3,oneof" json:"compare,omitempty"`
+	state     protoimpl.MessageState  `protogen:"open.v1"`
+	CompareAs ByteStringCompareAsType `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.ByteStringCompareAsType" json:"compare_as,omitempty"`
+	// Operand to compare against. Unused (may be omitted) for EMPTY and NOT_EMPTY.
+	Compare       []byte `protobuf:"bytes,2,opt,name=compare,proto3,oneof" json:"compare,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -400,6 +445,7 @@ func (x *ByteStringProperty) GetCompare() []byte {
 	return nil
 }
 
+// BoolProperty compares a boolean field via EQUALS / NOT_EQUALS.
 type BoolProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     BoolCompareAsType      `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.BoolCompareAsType" json:"compare_as,omitempty"`
@@ -452,6 +498,8 @@ func (x *BoolProperty) GetCompare() bool {
 	return false
 }
 
+// UInt64Property compares an unsigned 64-bit field. Supports the full ordering
+// (equals, not-equals, and the four greater/less-than variants).
 type UInt64Property struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     NumberCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.NumberCompareAsType" json:"compare_as,omitempty"`
@@ -504,6 +552,7 @@ func (x *UInt64Property) GetCompare() uint64 {
 	return 0
 }
 
+// UInt32Property compares an unsigned 32-bit field. Supports the full ordering.
 type UInt32Property struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     NumberCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.NumberCompareAsType" json:"compare_as,omitempty"`
@@ -556,6 +605,7 @@ func (x *UInt32Property) GetCompare() uint32 {
 	return 0
 }
 
+// Int64Property compares a signed 64-bit field. Supports the full ordering.
 type Int64Property struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     NumberCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.NumberCompareAsType" json:"compare_as,omitempty"`
@@ -608,6 +658,7 @@ func (x *Int64Property) GetCompare() int64 {
 	return 0
 }
 
+// Int32Property compares a signed 32-bit field. Supports the full ordering.
 type Int32Property struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     NumberCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.NumberCompareAsType" json:"compare_as,omitempty"`
@@ -660,6 +711,7 @@ func (x *Int32Property) GetCompare() int32 {
 	return 0
 }
 
+// DoubleProperty compares a double-precision field. Supports the full ordering.
 type DoubleProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     NumberCompareAsType    `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.NumberCompareAsType" json:"compare_as,omitempty"`
@@ -712,10 +764,18 @@ func (x *DoubleProperty) GetCompare() float64 {
 	return 0
 }
 
+// KeyValueProperty matches a single attribute (an OTLP KeyValue).
+//
+// The attribute matches when its key equals `key` exactly AND its value matches
+// `value`. Because `value` selects a typed comparison, the attribute's value
+// must also carry that type — a StringProperty under `value` only matches a
+// string-typed attribute, never an int- or bool-typed one.
 type KeyValueProperty struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value         *AnyValueProperty      `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Attribute key to match, compared for exact equality.
+	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	// Typed comparison applied to the attribute's value.
+	Value         *AnyValueProperty `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -764,6 +824,11 @@ func (x *KeyValueProperty) GetValue() *AnyValueProperty {
 	return nil
 }
 
+// AnyValueProperty selects which typed comparison to apply to an OTLP AnyValue.
+//
+// Set exactly one field. The value matches only when the target carries the
+// same type as the field set here (a string_value comparison never matches a
+// numeric value); leaving the oneof unset matches nothing.
 type AnyValueProperty struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -926,6 +991,11 @@ func (*AnyValueProperty_KvlistValue) isAnyValueProperty_Value() {}
 
 func (*AnyValueProperty_ByteStringValue) isAnyValueProperty_Value() {}
 
+// ArrayValueProperty matches an OTLP array value.
+//
+// It matches when EVERY element-property in `values` matches at least one
+// element of the target array (each filter element is satisfied independently;
+// elements may overlap). An empty `values` matches any array.
 type ArrayValueProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Values        []*AnyValueProperty    `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
@@ -970,6 +1040,13 @@ func (x *ArrayValueProperty) GetValues() []*AnyValueProperty {
 	return nil
 }
 
+// KeyValueListProperty matches a set of attributes (e.g. a signal's `attributes`
+// map, or an OTLP kvlist value).
+//
+// It matches when EVERY KeyValueProperty in `values` matches at least one entry
+// in the target list (AND across the filter's entries, existential over the
+// target). An empty `values` matches any list — so an attributes filter with no
+// entries imposes no constraint.
 type KeyValueListProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Values        []*KeyValueProperty    `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`

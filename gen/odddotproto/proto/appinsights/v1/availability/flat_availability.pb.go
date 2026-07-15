@@ -22,10 +22,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// FlatAvailability is one availability-test telemetry item paired with the
+// envelope it arrived under — the unit every availability query returns.
 type FlatAvailability struct {
-	state         protoimpl.MessageState    `protogen:"open.v1"`
-	Availability  *v1.AvailabilityTelemetry `protobuf:"bytes,1,opt,name=availability,proto3" json:"availability,omitempty"`
-	Envelope      *v1.TelemetryEnvelope     `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched availability telemetry.
+	Availability *v1.AvailabilityTelemetry `protobuf:"bytes,1,opt,name=availability,proto3" json:"availability,omitempty"`
+	// The shared telemetry envelope (instrumentation key, time, context).
+	Envelope      *v1.TelemetryEnvelope `protobuf:"bytes,2,opt,name=envelope,proto3" json:"envelope,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

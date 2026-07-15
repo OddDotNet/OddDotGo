@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// MetricQueryResponse is the unary Query reply: every metric item that matched.
+// Empty when the wait ended with no match. StreamQuery streams the FlatMetric
+// items individually instead.
 type MetricQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Metrics       []*FlatMetric          `protobuf:"bytes,1,rep,name=metrics,proto3" json:"metrics,omitempty"`

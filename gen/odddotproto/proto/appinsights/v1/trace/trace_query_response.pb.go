@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// TraceQueryResponse is the unary Query reply: every trace item that matched.
+// Empty when the wait ended with no match. StreamQuery streams the FlatTrace
+// items individually instead.
 type TraceQueryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Traces        []*FlatTrace           `protobuf:"bytes,1,rep,name=traces,proto3" json:"traces,omitempty"`

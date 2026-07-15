@@ -27,9 +27,16 @@ const (
 // SpanQueryServiceClient is the client API for SpanQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// SpanQueryService queries the spans the sink has received.
 type SpanQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at
+	// once. See SpanQueryRequest.
 	Query(ctx context.Context, in *SpanQueryRequest, opts ...grpc.CallOption) (*SpanQueryResponse, error)
+	// StreamQuery runs the same query but streams each FlatSpan as it matches,
+	// over the same Take/Duration window.
 	StreamQuery(ctx context.Context, in *SpanQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatSpan], error)
+	// Reset clears the sink's buffered spans. See SpanResetRequest.
 	Reset(ctx context.Context, in *SpanResetRequest, opts ...grpc.CallOption) (*SpanResetResponse, error)
 }
 
@@ -83,9 +90,16 @@ func (c *spanQueryServiceClient) Reset(ctx context.Context, in *SpanResetRequest
 // SpanQueryServiceServer is the server API for SpanQueryService service.
 // All implementations must embed UnimplementedSpanQueryServiceServer
 // for forward compatibility.
+//
+// SpanQueryService queries the spans the sink has received.
 type SpanQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at
+	// once. See SpanQueryRequest.
 	Query(context.Context, *SpanQueryRequest) (*SpanQueryResponse, error)
+	// StreamQuery runs the same query but streams each FlatSpan as it matches,
+	// over the same Take/Duration window.
 	StreamQuery(*SpanQueryRequest, grpc.ServerStreamingServer[FlatSpan]) error
+	// Reset clears the sink's buffered spans. See SpanResetRequest.
 	Reset(context.Context, *SpanResetRequest) (*SpanResetResponse, error)
 	mustEmbedUnimplementedSpanQueryServiceServer()
 }

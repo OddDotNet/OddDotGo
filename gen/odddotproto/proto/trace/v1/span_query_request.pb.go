@@ -24,11 +24,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// SpanQueryRequest asks the sink for spans matching filters, bounded by take
+// and duration.
 type SpanQueryRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
-	Take          *v1.Take               `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
-	Duration      *v1.Duration           `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Filters a span must satisfy to match. A span must pass every filter
+	// (logical AND); an empty list matches all spans.
+	Filters []*Where `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
+	// How many matching spans end the wait early. Defaults to TakeFirst. See Take.
+	Take *v1.Take `protobuf:"bytes,2,opt,name=take,proto3" json:"take,omitempty"`
+	// Maximum time to wait for matching spans. Defaults to 30s. See Duration.
+	Duration      *v1.Duration `protobuf:"bytes,3,opt,name=duration,proto3,oneof" json:"duration,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -84,6 +90,9 @@ func (x *SpanQueryRequest) GetDuration() *v1.Duration {
 	return nil
 }
 
+// Where is one filter clause. Set exactly one field to choose what it matches;
+// an unset Where matches nothing. A query ANDs its Where clauses together (see
+// SpanQueryRequest.filters).
 type Where struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -195,26 +204,32 @@ type isWhere_Value interface {
 }
 
 type Where_Property struct {
+	// Match a field of the span itself.
 	Property *PropertyFilter `protobuf:"bytes,1,opt,name=property,proto3,oneof"`
 }
 
 type Where_Or struct {
+	// Match when ANY of the nested clauses matches (logical OR).
 	Or *OrFilter `protobuf:"bytes,2,opt,name=or,proto3,oneof"`
 }
 
 type Where_InstrumentationScope struct {
+	// Match the span's instrumentation scope.
 	InstrumentationScope *v1.InstrumentationScopeFilter `protobuf:"bytes,3,opt,name=instrumentation_scope,json=instrumentationScope,proto3,oneof"`
 }
 
 type Where_Resource struct {
+	// Match the span's resource.
 	Resource *v11.ResourceFilter `protobuf:"bytes,4,opt,name=resource,proto3,oneof"`
 }
 
 type Where_InstrumentationScopeSchemaUrl struct {
+	// Match the instrumentation scope's schema URL.
 	InstrumentationScopeSchemaUrl *v1.StringProperty `protobuf:"bytes,5,opt,name=instrumentation_scope_schema_url,json=instrumentationScopeSchemaUrl,proto3,oneof"`
 }
 
 type Where_ResourceSchemaUrl struct {
+	// Match the resource's schema URL.
 	ResourceSchemaUrl *v1.StringProperty `protobuf:"bytes,6,opt,name=resource_schema_url,json=resourceSchemaUrl,proto3,oneof"`
 }
 
@@ -230,6 +245,8 @@ func (*Where_InstrumentationScopeSchemaUrl) isWhere_Value() {}
 
 func (*Where_ResourceSchemaUrl) isWhere_Value() {}
 
+// PropertyFilter matches a single field of the span. Set exactly one field; an
+// unset PropertyFilter matches nothing. Fields mirror the OpenTelemetry Span.
 type PropertyFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -481,6 +498,7 @@ type PropertyFilter_DroppedAttributesCount struct {
 }
 
 type PropertyFilter_Event struct {
+	// Match when ANY of the span's events satisfies the EventFilter.
 	Event *EventFilter `protobuf:"bytes,11,opt,name=event,proto3,oneof"`
 }
 
@@ -489,6 +507,7 @@ type PropertyFilter_DroppedEventsCount struct {
 }
 
 type PropertyFilter_Link struct {
+	// Match when ANY of the span's links satisfies the LinkFilter.
 	Link *LinkFilter `protobuf:"bytes,13,opt,name=link,proto3,oneof"`
 }
 
@@ -536,6 +555,8 @@ func (*PropertyFilter_Status) isPropertyFilter_Value() {}
 
 func (*PropertyFilter_Flags) isPropertyFilter_Value() {}
 
+// OrFilter matches when ANY of its nested Where clauses matches (logical OR),
+// letting you express disjunctions inside the otherwise-AND filter list.
 type OrFilter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Filters       []*Where               `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
@@ -580,6 +601,8 @@ func (x *OrFilter) GetFilters() []*Where {
 	return nil
 }
 
+// EventFilter matches a span event. Set exactly one field; an unset EventFilter
+// matches nothing.
 type EventFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -694,6 +717,8 @@ func (*EventFilter_Attributes) isEventFilter_Value() {}
 
 func (*EventFilter_DroppedAttributesCount) isEventFilter_Value() {}
 
+// LinkFilter matches a span link. Set exactly one field; an unset LinkFilter
+// matches nothing.
 type LinkFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -840,6 +865,8 @@ func (*LinkFilter_DroppedAttributesCount) isLinkFilter_Value() {}
 
 func (*LinkFilter_Flags) isLinkFilter_Value() {}
 
+// StatusFilter matches a span's status. Set exactly one field; an unset
+// StatusFilter matches nothing.
 type StatusFilter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -911,10 +938,12 @@ type isStatusFilter_Value interface {
 }
 
 type StatusFilter_Message struct {
+	// Match the status message string.
 	Message *v1.StringProperty `protobuf:"bytes,2,opt,name=message,proto3,oneof"`
 }
 
 type StatusFilter_Code struct {
+	// Match the status code (Ok / Error / Unset).
 	Code *SpanStatusCodeProperty `protobuf:"bytes,3,opt,name=code,proto3,oneof"`
 }
 
@@ -922,6 +951,8 @@ func (*StatusFilter_Message) isStatusFilter_Value() {}
 
 func (*StatusFilter_Code) isStatusFilter_Value() {}
 
+// SpanStatusCodeProperty compares a span's status code against an OTLP
+// Status.StatusCode via EQUALS / NOT_EQUALS. See EnumCompareAsType.
 type SpanStatusCodeProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     v1.EnumCompareAsType   `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.EnumCompareAsType" json:"compare_as,omitempty"`
@@ -974,6 +1005,8 @@ func (x *SpanStatusCodeProperty) GetCompare() v12.Status_StatusCode {
 	return v12.Status_StatusCode(0)
 }
 
+// SpanKindProperty compares a span's kind against an OTLP Span.SpanKind via
+// EQUALS / NOT_EQUALS. See EnumCompareAsType.
 type SpanKindProperty struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CompareAs     v1.EnumCompareAsType   `protobuf:"varint,1,opt,name=compare_as,json=compareAs,proto3,enum=odddotnet.proto.common.v1.EnumCompareAsType" json:"compare_as,omitempty"`

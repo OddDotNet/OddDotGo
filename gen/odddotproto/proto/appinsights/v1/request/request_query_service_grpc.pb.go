@@ -27,9 +27,14 @@ const (
 // RequestQueryServiceClient is the client API for RequestQueryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// RequestQueryService queries the request telemetry the sink has received.
 type RequestQueryServiceClient interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(ctx context.Context, in *RequestQueryRequest, opts ...grpc.CallOption) (*RequestQueryResponse, error)
+	// StreamQuery streams each FlatRequest as it matches, over the same window.
 	StreamQuery(ctx context.Context, in *RequestQueryRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[FlatRequest], error)
+	// Reset clears the sink's buffered request telemetry.
 	Reset(ctx context.Context, in *RequestResetRequest, opts ...grpc.CallOption) (*RequestResetResponse, error)
 }
 
@@ -83,9 +88,14 @@ func (c *requestQueryServiceClient) Reset(ctx context.Context, in *RequestResetR
 // RequestQueryServiceServer is the server API for RequestQueryService service.
 // All implementations must embed UnimplementedRequestQueryServiceServer
 // for forward compatibility.
+//
+// RequestQueryService queries the request telemetry the sink has received.
 type RequestQueryServiceServer interface {
+	// Query waits per the request's Take/Duration, then returns all matches at once.
 	Query(context.Context, *RequestQueryRequest) (*RequestQueryResponse, error)
+	// StreamQuery streams each FlatRequest as it matches, over the same window.
 	StreamQuery(*RequestQueryRequest, grpc.ServerStreamingServer[FlatRequest]) error
+	// Reset clears the sink's buffered request telemetry.
 	Reset(context.Context, *RequestResetRequest) (*RequestResetResponse, error)
 	mustEmbedUnimplementedRequestQueryServiceServer()
 }

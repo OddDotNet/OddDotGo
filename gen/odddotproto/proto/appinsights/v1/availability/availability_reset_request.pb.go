@@ -21,6 +21,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AvailabilityResetRequest asks the sink to discard every buffered availability
+// item. It takes no arguments; the reset is unconditional.
 type AvailabilityResetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields

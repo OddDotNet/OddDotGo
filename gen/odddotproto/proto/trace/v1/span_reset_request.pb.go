@@ -21,6 +21,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// SpanResetRequest asks the sink to discard every buffered span. It takes no
+// arguments; the reset is unconditional. Useful between test cases to start
+// each one from an empty sink.
 type SpanResetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
