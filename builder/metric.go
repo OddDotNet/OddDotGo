@@ -13,8 +13,9 @@ type MetricQueryRequestBuilder struct {
 	configurator *WhereMetricFilterConfigurator
 }
 
-// NewMetricQueryRequestBuilder creates a new builder with defaults:
-// Take: TakeFirst, Duration: 30 seconds, no filters.
+// NewMetricQueryRequestBuilder creates a builder with defaults: TakeFirst, a
+// 30-second Wait, and no filters. See the package documentation for the Take
+// and Duration contract.
 func NewMetricQueryRequestBuilder() *MetricQueryRequestBuilder {
 	return &MetricQueryRequestBuilder{
 		request: &metricsv1.MetricQueryRequest{
@@ -31,7 +32,9 @@ func NewMetricQueryRequestBuilder() *MetricQueryRequestBuilder {
 	}
 }
 
-// TakeFirst configures the request to take the first matching metric.
+// TakeFirst configures the query to return as soon as the first matching metric
+// is found, or when the Wait duration elapses if none is found. This is the
+// default.
 func (b *MetricQueryRequestBuilder) TakeFirst() *MetricQueryRequestBuilder {
 	b.request.Take = &commonv1.Take{
 		Value: &commonv1.Take_TakeFirst{
@@ -41,7 +44,8 @@ func (b *MetricQueryRequestBuilder) TakeFirst() *MetricQueryRequestBuilder {
 	return b
 }
 
-// TakeExact configures the request to take exactly count matching metrics.
+// TakeExact configures the query to return as soon as count matching metrics
+// are found, or when the Wait duration elapses with fewer than count found.
 func (b *MetricQueryRequestBuilder) TakeExact(count int32) *MetricQueryRequestBuilder {
 	b.request.Take = &commonv1.Take{
 		Value: &commonv1.Take_TakeExact{
@@ -53,7 +57,10 @@ func (b *MetricQueryRequestBuilder) TakeExact(count int32) *MetricQueryRequestBu
 	return b
 }
 
-// TakeAll configures the request to take all matching metrics within the duration.
+// TakeAll configures the query to collect every matching metric seen over the
+// whole Wait duration. TakeAll never returns early — the query always blocks
+// for the full duration — so prefer TakeFirst or TakeExact with a filter to
+// return as soon as a specific metric arrives.
 func (b *MetricQueryRequestBuilder) TakeAll() *MetricQueryRequestBuilder {
 	b.request.Take = &commonv1.Take{
 		Value: &commonv1.Take_TakeAll{
@@ -63,7 +70,9 @@ func (b *MetricQueryRequestBuilder) TakeAll() *MetricQueryRequestBuilder {
 	return b
 }
 
-// Wait sets the duration to wait for matching metrics.
+// Wait sets the maximum duration the query blocks for matching metrics. A value
+// of zero or less selects the sink default of 30 seconds; it does not return
+// immediately.
 func (b *MetricQueryRequestBuilder) Wait(d time.Duration) *MetricQueryRequestBuilder {
 	ms := int32(d.Milliseconds())
 	if ms < 0 {
