@@ -7,9 +7,9 @@
 package metricsv1
 
 import (
-	v12 "github.com/OddDotNet/OddDotGo/gen/opentelemetry/proto/common/v1"
-	v1 "github.com/OddDotNet/OddDotGo/gen/opentelemetry/proto/metrics/v1"
-	v11 "github.com/OddDotNet/OddDotGo/gen/opentelemetry/proto/resource/v1"
+	v12 "go.opentelemetry.io/proto/otlp/common/v1"
+	v1 "go.opentelemetry.io/proto/otlp/metrics/v1"
+	v11 "go.opentelemetry.io/proto/otlp/resource/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

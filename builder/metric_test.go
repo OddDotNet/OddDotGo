@@ -6,7 +6,7 @@ import (
 
 	commonv1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/common/v1"
 	metricsv1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/metrics/v1"
-	otlpmetricsv1 "github.com/OddDotNet/OddDotGo/gen/opentelemetry/proto/metrics/v1"
+	otlpmetricsv1 "go.opentelemetry.io/proto/otlp/metrics/v1"
 )
 
 func TestMetricQueryRequestBuilder_Defaults(t *testing.T) {

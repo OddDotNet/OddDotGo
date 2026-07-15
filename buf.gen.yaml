@@ -2,8 +2,27 @@ version: v2
 managed:
   enabled: true
   override:
+    # OddDotNet's own protos keep the vendored Go import prefix.
     - file_option: go_package_prefix
       value: github.com/OddDotNet/OddDotGo/gen
+    # The vendored OTLP protos are import-only: pin each to the canonical
+    # go.opentelemetry.io/proto/otlp package so generated OddDotNet code reuses
+    # the upstream Go types instead of a conflicting local copy. (SREI-9047)
+    - file_option: go_package
+      path: opentelemetry/proto/common/v1/common.proto
+      value: go.opentelemetry.io/proto/otlp/common/v1
+    - file_option: go_package
+      path: opentelemetry/proto/resource/v1/resource.proto
+      value: go.opentelemetry.io/proto/otlp/resource/v1
+    - file_option: go_package
+      path: opentelemetry/proto/trace/v1/trace.proto
+      value: go.opentelemetry.io/proto/otlp/trace/v1
+    - file_option: go_package
+      path: opentelemetry/proto/logs/v1/logs.proto
+      value: go.opentelemetry.io/proto/otlp/logs/v1
+    - file_option: go_package
+      path: opentelemetry/proto/metrics/v1/metrics.proto
+      value: go.opentelemetry.io/proto/otlp/metrics/v1
 plugins:
   - remote: buf.build/protocolbuffers/go
     out: gen
@@ -13,3 +32,9 @@ plugins:
     out: gen
     opt:
       - paths=source_relative
+# Generate only OddDotNet's protos; the vendored opentelemetry/* protos are
+# import-only (their Go is provided by go.opentelemetry.io/proto/otlp).
+inputs:
+  - directory: .
+    paths:
+      - proto/odddotproto

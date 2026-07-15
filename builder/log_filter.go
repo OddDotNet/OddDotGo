@@ -4,7 +4,7 @@ import (
 	commonv1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/common/v1"
 	logsv1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/logs/v1"
 	resourcev1 "github.com/OddDotNet/OddDotGo/gen/odddotproto/proto/resource/v1"
-	otlplogsv1 "github.com/OddDotNet/OddDotGo/gen/opentelemetry/proto/logs/v1"
+	otlplogsv1 "go.opentelemetry.io/proto/otlp/logs/v1"
 )
 
 // WhereLogFilterConfigurator provides methods to add filters for log queries.
